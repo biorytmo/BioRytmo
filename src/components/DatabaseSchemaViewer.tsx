@@ -197,6 +197,8 @@ export const DatabaseSchemaViewer: React.FC = () => {
             </button>
           </div>
         </div>
+      </div>
+
       {/* Supabase Connected Project Banner */}
       <div className="p-4 rounded-xl border border-emerald-300 bg-emerald-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs">
         <div className="space-y-1">
