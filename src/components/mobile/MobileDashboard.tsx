@@ -38,7 +38,8 @@ import {
   SlidersHorizontal,
   FileUp,
   Info,
-  CheckCheck
+  CheckCheck,
+  Download
 } from 'lucide-react';
 
 interface MobileDashboardProps {
@@ -46,13 +47,17 @@ interface MobileDashboardProps {
   onOpenOnboarding?: () => void;
   onOpenDevSheet?: () => void;
   onLogout?: () => void;
+  onOpenInstallModal?: () => void;
+  isInstallable?: boolean;
 }
 
 export const MobileDashboard: React.FC<MobileDashboardProps> = ({
   onboardingData,
   onOpenOnboarding,
   onOpenDevSheet,
-  onLogout
+  onLogout,
+  onOpenInstallModal,
+  isInstallable
 }) => {
   const [medications, setMedications] = useState<UserMedication[]>(onboardingData.medications);
   const [simulatedSleepScore, setSimulatedSleepScore] = useState<number>(54);
@@ -233,6 +238,19 @@ export const MobileDashboard: React.FC<MobileDashboardProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5">
+            {/* PWA Install Button */}
+            {onOpenInstallModal && isInstallable && (
+              <button
+                type="button"
+                onClick={onOpenInstallModal}
+                className="flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs transition-all cursor-pointer active:scale-95 animate-pulse"
+                title="Instalar BioRytmo no Celular"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Instalar</span>
+              </button>
+            )}
+
             {/* Live Galaxy Fit 3 sync indicator */}
             <button
               type="button"
@@ -959,8 +977,22 @@ export const MobileDashboard: React.FC<MobileDashboardProps> = ({
               </div>
             </div>
 
-            {/* Actions: Redo Onboarding & Dev Hub */}
+            {/* Actions: Install, Redo Onboarding & Dev Hub */}
             <div className="space-y-2 pt-2">
+              {onOpenInstallModal && isInstallable && (
+                <button
+                  type="button"
+                  onClick={onOpenInstallModal}
+                  className="w-full min-h-[46px] p-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-semibold text-xs flex items-center justify-between shadow-md transition-all cursor-pointer active:scale-98"
+                >
+                  <div className="flex items-center gap-2">
+                    <Download className="w-4 h-4 text-emerald-200" />
+                    <span>Instalar o BioRytmo no Celular (App Nativo)</span>
+                  </div>
+                  <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded font-bold uppercase">Instalar</span>
+                </button>
+              )}
+
               <button
                 type="button"
                 onClick={onOpenOnboarding}

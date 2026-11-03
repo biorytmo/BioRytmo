@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#022c22"/>
+    </linearGradient>
+    <linearGradient id="pulseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="50%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#6ee7b7"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  
+  <!-- Background with Safe Padding for Maskable Icons -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  
+  <!-- Outer subtle pulse ring -->
+  <circle cx="256" cy="256" r="180" fill="none" stroke="#10b981" stroke-width="6" opacity="0.25"/>
+  <circle cx="256" cy="256" r="140" fill="none" stroke="#34d399" stroke-width="4" opacity="0.15"/>
+  
+  <!-- Heart Rhythm Waveform (ECG + Heart Symbol) -->
+  <path d="M 120 270 
+           L 180 270 
+           L 205 220 
+           L 235 340 
+           L 270 170 
+           L 305 310 
+           L 330 270 
+           L 392 270" 
+        fill="none" 
+        stroke="url(#pulseGrad)" 
+        stroke-width="24" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        filter="url(#glow)"/>
+        
+  <!-- BioRytmo Center Core Spark -->
+  <circle cx="270" cy="170" r="14" fill="#6ee7b7" filter="url(#glow)"/>
+  <circle cx="270" cy="170" r="8" fill="#ffffff"/>
+  
+  <!-- Bottom Text Mark -->
+  <text x="256" y="420" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="34" font-weight="800" fill="#ecfdf5" letter-spacing="4" text-anchor="middle">BIORYTMO</text>
+</svg>

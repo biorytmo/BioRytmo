@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthScreen } from './components/mobile/AuthScreen';
 import { MobileOnboardingWizard } from './components/mobile/MobileOnboardingWizard';
 import { MobileDashboard } from './components/mobile/MobileDashboard';
 import { DeveloperHubModal } from './components/mobile/DeveloperHubModal';
+import { PWAInstallPromptModal } from './components/mobile/PWAInstallPromptModal';
+import { usePWAInstall } from './hooks/usePWAInstall';
 import { OnboardingState } from './types/health';
 
 const INITIAL_USER_DATA: OnboardingState = {
@@ -75,7 +77,48 @@ export default function App() {
   const [userData, setUserData] = useState<OnboardingState>(INITIAL_USER_DATA);
   const [showDevSheet, setShowDevSheet] = useState<boolean>(false);
 
-  const handleLoginSuccess = (isFirstLogin: boolean) => {
+  // PWA Installation Hook (A2HS & Standalone detection)
+  const {
+    isInstallable,
+    hasNativePrompt,
+    isInstalled,
+    isIOS,
+    showAutoPrompt,
+    install,
+    dismissPrompt,
+    openPromptManually,
+  } = usePWAInstall();
+
+  const [installModalOpen, setInstallModalOpen] = useState<boolean>(false);
+
+  // Automatically trigger install modal as soon as opened for the first time via link
+  useEffect(() => {
+    if (showAutoPrompt && !isInstalled) {
+      setInstallModalOpen(true);
+    }
+  }, [showAutoPrompt, isInstalled]);
+
+  const handleOpenInstall = () => {
+    openPromptManually();
+    setInstallModalOpen(true);
+  };
+
+  const handleCloseInstall = () => {
+    dismissPrompt();
+    setInstallModalOpen(false);
+  };
+
+  const handleLoginSuccess = (isFirstLogin: boolean, userEmail?: string) => {
+    if (userEmail && userEmail.includes('@')) {
+      const detectedName = userEmail.split('@')[0];
+      setUserData(prev => ({
+        ...prev,
+        personal: {
+          ...prev.personal,
+          name: detectedName.charAt(0).toUpperCase() + detectedName.slice(1)
+        }
+      }));
+    }
     if (isFirstLogin) {
       setCurrentScreen('wizard');
     } else {
@@ -90,7 +133,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen w-full bg-slate-900/5 sm:bg-slate-900/10 flex justify-center items-start text-slate-900 font-sans selection:bg-emerald-100 selection:text-emerald-900">
-      {/* Smartphone viewport container */}
+      {/* Smartphone Viewport Container */}
       <div className="w-full max-w-md min-h-screen bg-slate-50 flex flex-col shadow-2xl relative border-x border-slate-200/60 overflow-x-hidden">
         
         {currentScreen === 'dashboard' && (
@@ -99,6 +142,8 @@ export default function App() {
             onOpenOnboarding={() => setCurrentScreen('wizard')}
             onOpenDevSheet={() => setShowDevSheet(true)}
             onLogout={() => setCurrentScreen('auth')}
+            onOpenInstallModal={handleOpenInstall}
+            isInstallable={isInstallable && !isInstalled}
           />
         )}
 
@@ -112,10 +157,22 @@ export default function App() {
         {currentScreen === 'auth' && (
           <AuthScreen
             onLoginSuccess={handleLoginSuccess}
+            onOpenInstallModal={handleOpenInstall}
+            isInstallable={isInstallable && !isInstalled}
           />
         )}
 
       </div>
+
+      {/* First-visit & On-Demand PWA Installation Prompt Modal */}
+      <PWAInstallPromptModal
+        isOpen={installModalOpen}
+        onClose={handleCloseInstall}
+        onInstall={install}
+        hasNativePrompt={hasNativePrompt}
+        isIOS={isIOS}
+        isInstalled={isInstalled}
+      />
 
       {/* Developer & Architecture Hub Modal (Accessible via in-app top icon or profile tab) */}
       <DeveloperHubModal
