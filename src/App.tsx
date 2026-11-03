@@ -73,7 +73,17 @@ const INITIAL_USER_DATA: OnboardingState = {
 };
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState<'dashboard' | 'wizard' | 'auth'>('dashboard');
+  const [currentScreen, setCurrentScreen] = useState<'dashboard' | 'wizard' | 'auth'>(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem('biorytmo_current_user');
+        if (saved) return 'dashboard';
+      }
+    } catch {
+      // fallback
+    }
+    return 'auth';
+  });
   const [userData, setUserData] = useState<OnboardingState>(INITIAL_USER_DATA);
   const [showDevSheet, setShowDevSheet] = useState<boolean>(false);
 
@@ -141,7 +151,12 @@ export default function App() {
             onboardingData={userData}
             onOpenOnboarding={() => setCurrentScreen('wizard')}
             onOpenDevSheet={() => setShowDevSheet(true)}
-            onLogout={() => setCurrentScreen('auth')}
+            onLogout={() => {
+              try {
+                localStorage.removeItem('biorytmo_current_user');
+              } catch {}
+              setCurrentScreen('auth');
+            }}
             onOpenInstallModal={handleOpenInstall}
             isInstallable={isInstallable && !isInstalled}
           />
