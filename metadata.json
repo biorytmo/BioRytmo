@@ -1,0 +1,6 @@
+{
+  "name": "BioRytmo - Arquitetura & Assistente de Saúde Integral",
+  "description": "Arquitetura de software, modelagem de banco de dados Supabase, motor de recomendação clínica e integração com wearables para assistente de saúde hiper-personalizado.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
