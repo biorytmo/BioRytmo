@@ -1,49 +1,127 @@
 import React, { useState } from 'react';
-import { TopBar } from './components/TopBar';
-import { MobileExperienceViewer } from './components/mobile/MobileExperienceViewer';
-import { RecommendationSimulator } from './components/RecommendationSimulator';
-import { DatabaseSchemaViewer } from './components/DatabaseSchemaViewer';
-import { PathologyKnowledgeExplorer } from './components/PathologyKnowledgeExplorer';
-import { SamsungWearableRoadmap } from './components/SamsungWearableRoadmap';
-import { ArchitectureDirectoryViewer } from './components/ArchitectureDirectoryViewer';
-import { AiClinicalAnalyst } from './components/AiClinicalAnalyst';
+import { AuthScreen } from './components/mobile/AuthScreen';
+import { MobileOnboardingWizard } from './components/mobile/MobileOnboardingWizard';
+import { MobileDashboard } from './components/mobile/MobileDashboard';
+import { DeveloperHubModal } from './components/mobile/DeveloperHubModal';
+import { OnboardingState } from './types/health';
+
+const INITIAL_USER_DATA: OnboardingState = {
+  currentStep: 8,
+  personal: {
+    name: 'Carlos Mendes',
+    birthDate: '1988-06-14',
+    gender: 'male',
+    heightCm: 177,
+    weightKg: 78.5
+  },
+  gutHealth: ['Gastrite', 'Refluxo / DRGE', 'Intolerância à Lactose'],
+  mentalHealth: ['Ansiedade', 'Insônia Crônica'],
+  chronicConditions: ['Hipercolesterolemia (Colesterol Alto)'],
+  medications: [
+    {
+      id: 'med_1',
+      name: 'Fitoesteróis Livres Padronizados',
+      dosage: '1.000 mg',
+      type: 'continuous',
+      continuousFrequency: 'daily',
+      startDate: '2026-11-01',
+      times: ['12:30', '19:30'],
+      currentStock: 4, // Alerta baixo (< 5 dias) para ativar lista de compras
+      minStockAlertDays: 5,
+      unit: 'cápsulas',
+      instructions: '15 min antes das refeições principais'
+    },
+    {
+      id: 'med_2',
+      name: 'Berberina Fitossomada',
+      dosage: '500 mg',
+      type: 'continuous',
+      continuousFrequency: 'daily',
+      startDate: '2026-11-01',
+      times: ['12:30', '19:30'],
+      currentStock: 40,
+      minStockAlertDays: 5,
+      unit: 'cápsulas',
+      instructions: 'Junto com a refeição (ativação AMPK)'
+    },
+    {
+      id: 'med_3',
+      name: 'Amoxicilina + Clavulanato',
+      dosage: '875 mg',
+      type: 'temporary',
+      intervalHours: 12,
+      startDate: '2026-11-01',
+      endDate: '2026-11-08',
+      times: ['08:00', '20:00'],
+      currentStock: 10,
+      unit: 'comprimidos',
+      instructions: 'De 12 em 12h com água'
+    }
+  ],
+  wearables: {
+    deviceModel: 'Samsung Galaxy Fit 3',
+    trackedMetrics: ['sono', 'frequencia_cardiaca', 'estresse'],
+    manualOverride: true
+  },
+  labFiles: [
+    { id: 'f1', name: 'Perfil_Lipidico_ApoB.pdf', size: '1.4 MB', date: '2026-10-24', type: 'application/pdf' },
+    { id: 'f2', name: 'Endoscopia_Digestiva_Alta.jpg', size: '2.8 MB', date: '2026-08-15', type: 'image/jpeg' }
+  ],
+  goals: ['cholesterol', 'gut', 'sleep']
+};
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'mobile_app' | 'simulator' | 'database' | 'knowledge' | 'wearable' | 'architecture' | 'ai_analyst'>('mobile_app');
+  const [currentScreen, setCurrentScreen] = useState<'dashboard' | 'wizard' | 'auth'>('dashboard');
+  const [userData, setUserData] = useState<OnboardingState>(INITIAL_USER_DATA);
+  const [showDevSheet, setShowDevSheet] = useState<boolean>(false);
+
+  const handleLoginSuccess = (isFirstLogin: boolean) => {
+    if (isFirstLogin) {
+      setCurrentScreen('wizard');
+    } else {
+      setCurrentScreen('dashboard');
+    }
+  };
+
+  const handleWizardComplete = (newData: OnboardingState) => {
+    setUserData(newData);
+    setCurrentScreen('dashboard');
+  };
 
   return (
-    <div className="min-h-screen bg-slate-100/60 text-slate-900 flex flex-col font-sans selection:bg-emerald-100 selection:text-emerald-900">
-      {/* 3-Zone Top Bar */}
-      <TopBar activeTab={activeTab} setActiveTab={setActiveTab} />
+    <div className="min-h-screen w-full bg-slate-900/5 sm:bg-slate-900/10 flex justify-center items-start text-slate-900 font-sans selection:bg-emerald-100 selection:text-emerald-900">
+      {/* Smartphone viewport container */}
+      <div className="w-full max-w-md min-h-screen bg-slate-50 flex flex-col shadow-2xl relative border-x border-slate-200/60 overflow-x-hidden">
+        
+        {currentScreen === 'dashboard' && (
+          <MobileDashboard
+            onboardingData={userData}
+            onOpenOnboarding={() => setCurrentScreen('wizard')}
+            onOpenDevSheet={() => setShowDevSheet(true)}
+            onLogout={() => setCurrentScreen('auth')}
+          />
+        )}
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-        {activeTab === 'mobile_app' && <MobileExperienceViewer />}
-        {activeTab === 'simulator' && <RecommendationSimulator />}
-        {activeTab === 'database' && <DatabaseSchemaViewer />}
-        {activeTab === 'knowledge' && <PathologyKnowledgeExplorer />}
-        {activeTab === 'wearable' && <SamsungWearableRoadmap />}
-        {activeTab === 'architecture' && <ArchitectureDirectoryViewer />}
-        {activeTab === 'ai_analyst' && <AiClinicalAnalyst />}
-      </main>
+        {currentScreen === 'wizard' && (
+          <MobileOnboardingWizard
+            onComplete={handleWizardComplete}
+            initialData={userData}
+          />
+        )}
 
-      {/* Clean Footer */}
-      <footer className="border-t border-slate-200 bg-white py-6 mt-12 text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-slate-800">BioRytmo Health OS</span>
-            <span>·</span>
-            <span>Medicina Funcional, Crononutrição e Biometria de Wearables</span>
-          </div>
-          <div className="flex items-center gap-4 text-slate-600">
-            <span>Supabase DDL</span>
-            <span>·</span>
-            <span>Health Connect Android SDK</span>
-            <span>·</span>
-            <span>Galaxy Fit 3</span>
-          </div>
-        </div>
-      </footer>
+        {currentScreen === 'auth' && (
+          <AuthScreen
+            onLoginSuccess={handleLoginSuccess}
+          />
+        )}
+
+      </div>
+
+      {/* Developer & Architecture Hub Modal (Accessible via in-app top icon or profile tab) */}
+      <DeveloperHubModal
+        isOpen={showDevSheet}
+        onClose={() => setShowDevSheet(false)}
+      />
     </div>
   );
 }

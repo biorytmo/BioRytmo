@@ -229,7 +229,7 @@ export const MobileOnboardingWizard: React.FC<MobileOnboardingWizardProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white rounded-3xl border border-slate-200/80 shadow-md overflow-hidden flex flex-col min-h-[640px]">
+    <div className="w-full max-w-md mx-auto min-h-screen bg-slate-50 flex flex-col text-slate-900 pb-6">
       
       {/* Top Header & Progress */}
       <div className="bg-slate-900 text-white p-5 space-y-3">
@@ -833,13 +833,13 @@ export const MobileOnboardingWizard: React.FC<MobileOnboardingWizardProps> = ({
 
       </div>
 
-      {/* Bottom Navigation Buttons */}
-      <div className="p-4 border-t border-slate-100 bg-white flex items-center justify-between gap-3">
+      {/* Sticky Bottom Navigation Buttons */}
+      <div className="sticky bottom-0 z-30 p-4 border-t border-slate-200 bg-white/95 backdrop-blur-md flex items-center justify-between gap-3 shadow-lg">
         {currentStep > 1 ? (
           <button
             type="button"
             onClick={() => setCurrentStep(currentStep - 1)}
-            className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 rounded-lg border border-slate-200 transition-colors flex items-center gap-1 cursor-pointer"
+            className="min-h-[44px] px-4 py-2.5 text-xs font-semibold text-slate-700 hover:text-slate-900 rounded-xl border border-slate-300 transition-colors flex items-center gap-1.5 cursor-pointer active:scale-95"
           >
             <ChevronLeft className="w-4 h-4" />
             <span>Voltar</span>
@@ -852,7 +852,7 @@ export const MobileOnboardingWizard: React.FC<MobileOnboardingWizardProps> = ({
           <button
             type="button"
             onClick={() => setCurrentStep(currentStep + 1)}
-            className="px-5 py-2.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm ml-auto"
+            className="min-h-[44px] px-5 py-2.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm ml-auto active:scale-95"
           >
             <span>Avançar</span>
             <ChevronRight className="w-4 h-4 text-emerald-400" />
@@ -861,10 +861,10 @@ export const MobileOnboardingWizard: React.FC<MobileOnboardingWizardProps> = ({
           <button
             type="button"
             onClick={handleFinish}
-            className="px-5 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl transition-colors flex items-center gap-2 cursor-pointer shadow-sm ml-auto"
+            className="min-h-[44px] px-5 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-sm ml-auto active:scale-95"
           >
             <Sparkles className="w-4 h-4 text-amber-200" />
-            <span>Concluir & Gerar Meu Dashboard</span>
+            <span>Concluir & Gerar Dashboard</span>
           </button>
         )}
       </div>
